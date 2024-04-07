@@ -27,7 +27,7 @@ vector<string> split(const string& s, char delimiter) {
     return tokens;
 }
 
-string removeQuotes(const std::string& s) {
+string removeQuotes(const string& s) {
     if (s.size() >= 2 && s.front() == '\'' && s.back() == '\'') {
         return s.substr(1, s.size() - 2);
     }
@@ -119,18 +119,16 @@ void useDatabase(){
           cout<<"Error opening database file"<<endl;
         }
 
-        std::cout << "ID" << std::setw(10) << "Name" << std::setw(10) << "Age" << std::setw(10) << "Grade" << std::endl;
-        std::cout << "---------------------------------------------" << std::endl;
+        cout << "ID" << setw(10) << "Name" << setw(10) << "Age" << setw(10) << "Grade" << endl;
+        cout << "---------------------------------------------" << endl;
 
       string line;
     while (getline(input, line)) {
-        // Split the line into fields
-        std::vector<std::string> fields = split(line, ',');
+        vector<string> fields = split(line, ',');
 
-        // Ensure there are enough fields before displaying
         if (fields.size() == 4) {
-            // Display fields in tabular format without parentheses
-            std::cout << fields[0].substr(1) << std::setw(10) << fields[1] << std::setw(10) << fields[2] << std::setw(10) << fields[3].substr(0,1) << std::endl;
+
+            cout << fields[0].substr(1) << setw(10) << fields[1] << setw(10) << fields[2] << setw(10) << fields[3].substr(0,1) << endl;
         }
     }
       input.close();
