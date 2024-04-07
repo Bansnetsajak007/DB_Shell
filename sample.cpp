@@ -89,6 +89,7 @@ void listCommands() {
   cout<<"showDb\t----->" << "To Check the selected Database \n";
   cout<<"query\t----->" << "To Enter in a Query (Editing mode)\n";
   cout<<"normal\t----->" << "To Enter in a Normal (View only mode)\n";
+  cout<<"clear\t----->" << "To clear console\n";
 }
 
 void listDatabase() {
@@ -172,6 +173,10 @@ static void repl() {
 
     if(line == "help") {
       listCommands();
+    }
+
+    if(line == "clear") {
+      system("cls"); 
     }
 
     if(line == "query") {
