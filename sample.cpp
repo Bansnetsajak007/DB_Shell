@@ -13,6 +13,7 @@ using namespace std;
 //global vector
   string selectedDB;
   string DbMode = "normal";  //view only mode can't edit database
+  vector<string> fieldArray;  //stores all the database fields
   vector<string> globalDbs;
   vector<string> useDB;
 
@@ -40,6 +41,21 @@ void copy(const vector<string>& source, vector<string>& destination) {
     for (const auto& str : source) {
         destination.push_back(str);
     }
+}
+
+void initializeDB(string DbName) {
+  int fieldsNum ;
+  string fieldName;
+  cout<<"Initializing " <<DbName<<"\n";
+  cout<<"How many fields you want in your DataBase: "<<endl;
+  cin>>fieldsNum;
+
+  for(int i=0; i<fieldsNum; i++) {
+    cout<<"Enter field: " << i+1<<endl;
+    cin>>fieldName;
+    fieldArray.push_back(fieldName);
+  }
+
 }
 
 void readDirectory(){
@@ -78,7 +94,13 @@ void createDatabase() {
     cout<<"Enter database name: ";
     cin>>dbname;
     ofstream file(dbname + fileFormat); 
-    cout<<"Database "<<dbname <<" created successfully\n";
+    cout<<"Database "<<dbname + ".db" <<" created successfully\n";
+    selectedDB = dbname + ".db"; //this db will get selected
+
+    //will perform an operation
+
+    initializeDB(selectedDB); 
+    
 }
 
 void listCommands() {
@@ -126,6 +148,7 @@ void useDatabase(){
       string line;
     while (getline(input, line)) {
         vector<string> fields = split(line, ',');
+
 
         if (fields.size() == 4) {
 
