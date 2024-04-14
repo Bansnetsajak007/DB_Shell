@@ -7,7 +7,10 @@
 #include<vector>
 #include <iomanip>
 #include <algorithm>
+#include <map>
+#include <functional>
 
+#define DB_FILE_EXTENSION ".db"
 using namespace std;
 
 //global vector
@@ -50,8 +53,8 @@ void initializeDB(string DbName) {
   cout<<"How many fields you want in your DataBase: "<<endl;
   cin>>fieldsNum;
 
-  for(int i=0; i<fieldsNum; i++) {
-    cout<<"Enter field: " << i+1<<endl;
+  for(int i=0; i<fieldsNum;) {
+    cout<<"Enter field: " << ++i<<endl;
     cin>>fieldName;
     fieldArray.push_back(fieldName);
   }
@@ -71,7 +74,7 @@ void readDirectory(){
             if (filename == "." || filename == "..") {
               continue;
             }
-            if (filename.length() > 3 && filename.substr(filename.length() - 3) == ".db") {
+            if (filename.length() > 3 && filename.substr(filename.length() - 3) == DB_FILE_EXTENSION) {
                 dbs.push_back(filename); // Store filename in dbs vector
                 copy(dbs , globalDbs);
             }
@@ -90,12 +93,13 @@ void readDirectory(){
 
 void createDatabase() {
     string dbname;
-    string fileFormat = ".db";
     cout<<"Enter database name: ";
     cin>>dbname;
-    ofstream file(dbname + fileFormat); 
-    cout<<"Database "<<dbname + ".db" <<" created successfully\n";
-    selectedDB = dbname + ".db"; //this db will get selected
+    dbname+=DB_FILE_EXTENSION;
+
+    ofstream file(dbname); 
+    cout<<"Database "<<dbname<<" created successfully\n";
+    selectedDB = dbname; //this db will get selected
 
     //will perform an operation
 
@@ -104,14 +108,17 @@ void createDatabase() {
 }
 
 void listCommands() {
-  cout<<"createDatabase\t----->" << "To Create a database\n";
-  cout<<"showDbs\t----->" << "list all the created databases\n";
-  cout<<"useDatabase\t----->" << "List all Existing databases also select which one to use\n";
-  cout<<"checkmode\t----->" << "To Check the mode of Database \n";
-  cout<<"showDb\t----->" << "To Check the selected Database \n";
-  cout<<"query\t----->" << "To Enter in a Query (Editing mode)\n";
-  cout<<"normal\t----->" << "To Enter in a Normal (View only mode)\n";
-  cout<<"clear\t----->" << "To clear console\n";
+  cout << left << setw(15) << "Command" << "Description" << endl;
+  cout << setw(15) << "--------------" << "-----------------------------" << endl;
+    // Display commands and descriptions
+  cout << setw(15) << "createDatabase" << "To Create a database" << endl;
+  cout << setw(15) << "showDbs" << "list all the created databases" << endl;
+  cout << setw(15) << "useDatabase" << "List all Existing databases also select which one to use" << endl;
+  cout << setw(15) << "checkmode" << "To Check the mode of Database" << endl;
+  cout << setw(15) << "showDb" << "To Check the selected Database" << endl;
+  cout << setw(15) << "query" << "To Enter in a Query (Editing mode)" << endl;
+  cout << setw(15) << "normal" << "To Enter in a Normal (View only mode)" << endl;
+  cout << setw(15) << "clear" << "To clear console" << endl << endl;
 }
 
 void listDatabase() {
@@ -123,10 +130,9 @@ void listDatabase() {
 void useDatabase(){
   string userChoice;
   readDirectory();
-  cout<<"\n";
-  cout<<"Enter Your Choice: ";
+  cout<< endl <<"Enter Your Choice: ";
   cin>>userChoice;
-  string final = userChoice + ".db";
+  string final = userChoice + DB_FILE_EXTENSION;
   auto it = find(globalDbs.begin(), globalDbs.end(), final);
     if (it != globalDbs.end()) {
         selectedDB = final;
@@ -162,55 +168,42 @@ void useDatabase(){
     }
 }
 
+// helperFunction
+void clearScreen(){
+  #ifdef _WIN_32
+    system("cls");
+  #endif
+    system("clear");
+}
+
 static void repl() {
+     map<string, function<void()>> cmdMap = {
+      {"createDatabase", createDatabase},
+      {"useDatabase", useDatabase},
+      {"checkmode", []()-> void{cout<<"Database is in: " <<DbMode <<"\n";}},
+      {"showDbs", listDatabase},
+      {"showDb", []()-> void{cout <<"Database Selected: " <<selectedDB << "\n";}},
+      {"query", []()->void{ DbMode="query"; listCommands(); }},
+      {"help", listCommands},
+      {"clear", clearScreen},
+      {"exit", []()->void{exit(0);}}
+    };
+
   string line;
   for (;;) {
     cout<<"DB >> ";
-
-    if (!getline(cin, line)) {
+    cin >> line;
+    if (line.empty()) {
       cout << endl;
         break;
       }
-
-    //command processor
-
-    if(line == "createDatabase") {
-      createDatabase();
+    
+    auto cmdIterator = cmdMap.find(line);
+    if(cmdIterator != cmdMap.end()) {
+      cmdIterator->second();
+    }  else {
+      cout<< "Invalid Cmd given. Type <help> to see available cmds \n"<< endl;
     }
-
-    if(line == "useDatabase") {
-      useDatabase();
-    }
-
-    if(line == "checkmode") {
-      cout<<"Database is in: " <<DbMode <<"\n";
-    }
-
-    if(line == "showDbs") {
-      listDatabase();
-    }
-
-    if(line == "showDb") {
-      cout <<"Database Selected: " <<selectedDB << "\n";
-    }
-
-    if(line == "help") {
-      listCommands();
-    }
-
-    if(line == "clear") {
-      system("cls"); 
-    }
-
-    if(line == "query") {
-      DbMode = "query";
-      listCommands();
-    }
-
-    if(line == "exit") {
-        break;
-    }
-
   }
 }
 
