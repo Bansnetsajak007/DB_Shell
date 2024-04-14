@@ -148,8 +148,20 @@ void useDatabase(){
           cout<<"Error opening database file"<<endl;
         }
 
-        cout << "ID" << setw(10) << "Name" << setw(10) << "Age" << setw(10) << "Grade" << endl;
-        cout << "---------------------------------------------" << endl;
+
+        //testingggggg
+        // temp code testinggg (manuall process will make automatic)
+        if(fieldArray.size() > 1) {
+          if(fieldArray.size() == 2) {
+            cout << fieldArray[0] << setw(10) << fieldArray[2] << endl;
+        }
+
+        else if(fieldArray.size() == 3) {
+          cout << fieldArray[0] << setw(10) << fieldArray[2] <<fieldArray[3] << endl;
+        } else {
+          cout<< "Invalid number of fields"<< endl;
+        }
+        }
 
       string line;
     while (getline(input, line)) {
@@ -170,10 +182,7 @@ void useDatabase(){
 
 // helperFunction
 void clearScreen(){
-  #ifdef _WIN_32
-    system("cls");
-  #endif
-    system("clear");
+  system("cls"); 
 }
 
 static void repl() {
